@@ -38,11 +38,17 @@ const loginValidation = [
     .withMessage('PIN must contain only digits')
 ];
 
-// Routes - MAKE SURE all these functions exist in authController
+// ============================================
+// ROUTES
+// ============================================
+
+// Public routes
 router.post('/register', validate(registerValidation), authController.register);
 router.post('/login', validate(loginValidation), authController.login);
-router.post('/verify-otp', authController.verifyOTP);
-router.post('/resend-otp', authController.resendOTP);
+router.post('/verify-otp', authController.verifyOtp);
+router.post('/resend-otp', authController.resendOtp);
+
+// Protected routes
 router.get('/me', authenticate, authController.getMe);
 
 module.exports = router;
