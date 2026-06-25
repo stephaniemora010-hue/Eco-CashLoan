@@ -5,6 +5,7 @@ const { authenticate } = require('../middleware/auth');
 const { validate } = require('../middleware/validation');
 const authController = require('../controllers/authController');
 
+// Validation rules
 const registerValidation = [
   body('phoneNumber')
     .isLength({ min: 9, max: 9 })
@@ -37,10 +38,11 @@ const loginValidation = [
     .withMessage('PIN must contain only digits')
 ];
 
+// Routes - MAKE SURE all these functions exist in authController
 router.post('/register', validate(registerValidation), authController.register);
 router.post('/login', validate(loginValidation), authController.login);
 router.post('/verify-otp', authController.verifyOTP);
 router.post('/resend-otp', authController.resendOTP);
 router.get('/me', authenticate, authController.getMe);
 
-module.exports = router; 
+module.exports = router;

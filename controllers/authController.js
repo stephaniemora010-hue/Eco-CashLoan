@@ -3,10 +3,11 @@ const jwt = require('jsonwebtoken');
 
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE
+    expiresIn: process.env.JWT_EXPIRE || '7d'
   });
 };
 
+// @desc    Register new user
 exports.register = async (req, res) => {
   try {
     const { phoneNumber, pin, fullName, email } = req.body;
@@ -46,6 +47,7 @@ exports.register = async (req, res) => {
   }
 };
 
+// @desc    Login user
 exports.login = async (req, res) => {
   try {
     const { phoneNumber, pin } = req.body;
@@ -87,9 +89,16 @@ exports.login = async (req, res) => {
   }
 };
 
+// @desc    Get current user
 exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
     res.status(200).json({
       success: true,
       user: user.getPublicProfile()
@@ -103,10 +112,12 @@ exports.getMe = async (req, res) => {
   }
 };
 
+// @desc    Verify OTP (simplified for now)
 exports.verifyOTP = async (req, res) => {
   try {
     const { phoneNumber, otp } = req.body;
     
+    // For demo: accept any 6-digit OTP
     if (otp && otp.length === 6) {
       const user = await User.findOne({ phoneNumber });
       if (user) {
@@ -136,6 +147,7 @@ exports.verifyOTP = async (req, res) => {
   }
 };
 
+// @desc    Resend OTP (simplified for now)
 exports.resendOTP = async (req, res) => {
   try {
     const { phoneNumber } = req.body;
@@ -150,4 +162,4 @@ exports.resendOTP = async (req, res) => {
       error: error.message
     });
   }
-}; 
+};
