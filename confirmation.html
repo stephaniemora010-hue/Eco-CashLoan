@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoCash - Application Submitted</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #777;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .info-box {
+            background: #f8f9ff;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #777;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .loan-amount-highlight {
+            color: #4361ee;
+            font-size: 20px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(to right, #4361ee, #7209b7);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #4361ee;
+            border: 2px solid #4361ee;
+            margin-top: 10px;
+        }
+        
+        .btn-outline:hover {
+            background: #4361ee;
+            color: white;
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+        }
+        
+        .ref-number {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .ref-number strong {
+            color: #333;
+            font-size: 18px;
+            display: block;
+            margin-top: 5px;
+        }
+        
+        footer {
+            padding: 20px;
+            color: #aaa;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 480px) {
+            .card {
+                padding: 30px 20px;
+            }
+            .title {
+                font-size: 24px;
+            }
+            .success-icon {
+                font-size: 60px;
+            }
+            .info-item {
+                flex-direction: column;
+                gap: 4px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="card">
+        <span class="success-icon">✅</span>
+        <h1 class="title">Application Submitted!</h1>
+        <p class="subtitle">
+            Your loan application has been received successfully.<br>
+            We'll review it and get back to you within 24 hours.
+        </p>
+
+        <div class="ref-number">
+            Reference Number
+            <strong id="refNumber">ECO-2026-XXXX</strong>
+        </div>
+
+        <div class="info-box">
+            <div class="info-item">
+                <span class="info-label">Loan Type</span>
+                <span class="info-value" id="confLoanType">Personal Loan</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Loan Amount</span>
+                <span class="info-value loan-amount-highlight" id="confLoanAmount">$5,000</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Term</span>
+                <span class="info-value" id="confLoanTerm">12 months</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Applicant</span>
+                <span class="info-value" id="confApplicant">John Doe</span>
+            </div>
+        </div>
+
+        <a href="index.html" class="btn">RETURN TO HOME</a>
+        <button class="btn btn-outline" onclick="window.print()">📄 Print Application</button>
+    </main>
+    <footer>© 2026 EcoCash</footer>
+
+    <script>
+        // Retrieve all data from localStorage
+        const loanType = localStorage.getItem('loanType') || 'Personal Loan';
+        const loanAmount = localStorage.getItem('loanAmount') || '5000';
+        const loanTerm = localStorage.getItem('loanTerm') || '12';
+        const loanPurpose = localStorage.getItem('loanPurpose') || 'Not specified';
+        const fullName = localStorage.getItem('fullName') || 'John Doe';
+        const email = localStorage.getItem('email') || 'john@example.com';
+        const phone = localStorage.getItem('phone') || '+1 234 567 890';
+
+        // Display data on confirmation page
+        document.getElementById('confLoanType').textContent = loanType;
+        document.getElementById('confLoanAmount').textContent = '$' + parseFloat(loanAmount).toLocaleString();
+        document.getElementById('confLoanTerm').textContent = loanTerm + ' months';
+        document.getElementById('confApplicant').textContent = fullName;
+
+        // Generate reference number
+        const refNum = 'ECO-' + new Date().getFullYear() + '-' + 
+                      String(Math.floor(1000 + Math.random() * 9000));
+        document.getElementById('refNumber').textContent = refNum;
+
+        // Optional: Clear localStorage after showing confirmation
+        // Uncomment the line below if you want to clear data after confirmation
+        // localStorage.clear();
+    </script>
+</body>
+
+</html>

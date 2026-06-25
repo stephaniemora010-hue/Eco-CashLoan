@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoCash - Personal Details</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+            overflow: hidden;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+        
+        header {
+            width: 100%;
+            max-width: 480px;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .back-btn {
+            font-size: 28px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #333;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .logo-eco {
+            color: #0066ff;
+        }
+        
+        .logo-cash {
+            color: #ff0000;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+        }
+        
+        .form-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            width: 180px;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin: 30px auto;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            width: 66.66%;
+            height: 100%;
+            background: linear-gradient(to right, #4361ee, #7209b7);
+        }
+        
+        .step-text {
+            text-align: center;
+            color: #777;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border 0.3s, box-shadow 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .form-input:focus {
+            border-color: #4361ee;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .invalid {
+            border-color: #e74c3c !important;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15) !important;
+        }
+        
+        .error-text {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+        }
+        
+        .error-text.show {
+            display: block;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .back-btn-main {
+            flex: 0 0 auto;
+            padding: 18px 30px;
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .back-btn-main:hover {
+            transform: scale(1.02);
+        }
+        
+        .submit-btn {
+            flex: 1;
+            padding: 18px;
+            background: linear-gradient(to right, #4361ee, #7209b7);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .submit-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+        
+        footer {
+            padding: 20px;
+            color: #aaa;
+            font-size: 13px;
+            text-align: center;
+            margin-top: auto;
+        }
+        
+        @media (max-width: 480px) {
+            .card {
+                padding: 25px 18px;
+            }
+            .form-title {
+                font-size: 24px;
+            }
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            .back-btn-main {
+                padding: 18px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <button class="back-btn" onclick="history.back()" aria-label="Go back">←</button>
+        <div class="logo"><span class="logo-eco">Eco</span><span class="logo-cash">Cash</span></div>
+        <div></div>
+    </header>
+    <main class="card">
+        <h1 class="form-title">Personal Details</h1>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        <div class="step-text">Step 2 of 3</div>
+
+        <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-input" id="fullName" placeholder="John Doe" required>
+            <div class="error-text" id="nameError">Please enter your full name.</div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" class="form-input" id="email" placeholder="john@example.com" required>
+                <div class="error-text" id="emailError">Please enter a valid email address.</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" class="form-input" id="phone" placeholder="+1 234 567 890" required>
+                <div class="error-text" id="phoneError">Please enter a valid phone number.</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Date of Birth</label>
+            <input type="date" class="form-input" id="dob" required>
+            <div class="error-text" id="dobError">You must be at least 18 years old.</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Employment Status</label>
+            <select class="form-input" id="employment" required>
+                <option value="">Select employment status</option>
+                <option value="employed">Employed Full-Time</option>
+                <option value="parttime">Employed Part-Time</option>
+                <option value="selfemployed">Self-Employed</option>
+                <option value="business">Business Owner</option>
+                <option value="unemployed">Unemployed</option>
+                <option value="student">Student</option>
+                <option value="retired">Retired</option>
+            </select>
+            <div class="error-text" id="employmentError">Please select your employment status.</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Monthly Income ($)</label>
+            <input type="number" class="form-input" id="income" placeholder="5000" min="0" required>
+            <div class="error-text" id="incomeError">Please enter your monthly income.</div>
+        </div>
+
+        <div class="btn-group">
+            <button class="back-btn-main" onclick="history.back()">BACK</button>
+            <button class="submit-btn" id="submitBtn">SUBMIT APPLICATION</button>
+        </div>
+    </main>
+    <footer>© 2026 EcoCash</footer>
+
+    <script>
+        // Pre-fill from localStorage if available
+        const savedName = localStorage.getItem('fullName');
+        const savedEmail = localStorage.getItem('email');
+        const savedPhone = localStorage.getItem('phone');
+        const savedDob = localStorage.getItem('dob');
+        const savedEmployment = localStorage.getItem('employment');
+        const savedIncome = localStorage.getItem('income');
+
+        if (savedName) document.getElementById('fullName').value = savedName;
+        if (savedEmail) document.getElementById('email').value = savedEmail;
+        if (savedPhone) document.getElementById('phone').value = savedPhone;
+        if (savedDob) document.getElementById('dob').value = savedDob;
+        if (savedEmployment) document.getElementById('employment').value = savedEmployment;
+        if (savedIncome) document.getElementById('income').value = savedIncome;
+
+        // Validation function
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validatePhone(phone) {
+            return phone.replace(/\s/g, '').length >= 10;
+        }
+
+        function validateAge(dob) {
+            const birthDate = new Date(dob);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age >= 18;
+        }
+
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            const name = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const dob = document.getElementById('dob').value;
+            const employment = document.getElementById('employment').value;
+            const income = document.getElementById('income').value.trim();
+
+            // Get error elements
+            const nameError = document.getElementById('nameError');
+            const emailError = document.getElementById('emailError');
+            const phoneError = document.getElementById('phoneError');
+            const dobError = document.getElementById('dobError');
+            const employmentError = document.getElementById('employmentError');
+            const incomeError = document.getElementById('incomeError');
+
+            // Get input elements
+            const nameInput = document.getElementById('fullName');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            const dobInput = document.getElementById('dob');
+            const employmentInput = document.getElementById('employment');
+            const incomeInput = document.getElementById('income');
+
+            // Reset errors
+            [nameInput, emailInput, phoneInput, dobInput, employmentInput, incomeInput].forEach(el => {
+                el.classList.remove('invalid');
+            });
+            [nameError, emailError, phoneError, dobError, employmentError, incomeError].forEach(el => {
+                el.classList.remove('show');
+            });
+
+            let valid = true;
+
+            // Validate name
+            if (!name || name.length < 2) {
+                nameInput.classList.add('invalid');
+                nameError.classList.add('show');
+                valid = false;
+            }
+
+            // Validate email
+            if (!email || !validateEmail(email)) {
+                emailInput.classList.add('invalid');
+                emailError.classList.add('show');
+                valid = false;
+            }
+
+            // Validate phone
+            if (!phone || !validatePhone(phone)) {
+                phoneInput.classList.add('invalid');
+                phoneError.classList.add('show');
+                valid = false;
+            }
+
+            // Validate DOB
+            if (!dob) {
+                dobInput.classList.add('invalid');
+                dobError.textContent = 'Please select your date of birth.';
+                dobError.classList.add('show');
+                valid = false;
+            } else if (!validateAge(dob)) {
+                dobInput.classList.add('invalid');
+                dobError.textContent = 'You must be at least 18 years old.';
+                dobError.classList.add('show');
+                valid = false;
+            }
+
+            // Validate employment
+            if (!employment) {
+                employmentInput.classList.add('invalid');
+                employmentError.classList.add('show');
+                valid = false;
+            }
+
+            // Validate income
+            if (!income || parseFloat(income) < 0) {
+                incomeInput.classList.add('invalid');
+                incomeError.classList.add('show');
+                valid = false;
+            }
+
+            if (!valid) {
+                const firstError = document.querySelector('.invalid');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstError.focus();
+                }
+                return;
+            }
+
+            // Save all data to localStorage
+            localStorage.setItem('fullName', name);
+            localStorage.setItem('email', email);
+            localStorage.setItem('phone', phone);
+            localStorage.setItem('dob', dob);
+            localStorage.setItem('employment', employment);
+            localStorage.setItem('income', income);
+
+            // Navigate to confirmation page
+            window.location.href = 'confirmation.html';
+        });
+
+        // Real-time validation
+        document.getElementById('fullName').addEventListener('input', function() {
+            if (this.value.trim().length >= 2) {
+                this.classList.remove('invalid');
+                document.getElementById('nameError').classList.remove('show');
+            }
+        });
+
+        document.getElementById('email').addEventListener('input', function() {
+            if (validateEmail(this.value.trim())) {
+                this.classList.remove('invalid');
+                document.getElementById('emailError').classList.remove('show');
+            }
+        });
+
+        document.getElementById('phone').addEventListener('input', function() {
+            if (validatePhone(this.value.trim())) {
+                this.classList.remove('invalid');
+                document.getElementById('phoneError').classList.remove('show');
+            }
+        });
+
+        document.getElementById('dob').addEventListener('change', function() {
+            if (this.value && validateAge(this.value)) {
+                this.classList.remove('invalid');
+                document.getElementById('dobError').classList.remove('show');
+            }
+        });
+
+        document.getElementById('employment').addEventListener('change', function() {
+            if (this.value) {
+                this.classList.remove('invalid');
+                document.getElementById('employmentError').classList.remove('show');
+            }
+        });
+
+        document.getElementById('income').addEventListener('input', function() {
+            if (this.value.trim() && parseFloat(this.value) >= 0) {
+                this.classList.remove('invalid');
+                document.getElementById('incomeError').classList.remove('show');
+            }
+        });
+    </script>
+</body>
+
+</html>
