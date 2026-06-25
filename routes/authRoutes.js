@@ -3,7 +3,23 @@ const router = express.Router();
 const { body } = require('express-validator');
 const { authenticate } = require('../middleware/auth');
 const { validate } = require('../middleware/validation');
-const authController = require('../controllers/authController');
+
+// Import controller - with error handling
+let authController;
+try {
+  authController = require('../controllers/authController');
+  console.log('✅ Auth controller loaded successfully');
+} catch (error) {
+  console.error('❌ Failed to load auth controller:', error.message);
+  // Create fallback functions
+  authController = {
+    register: (req, res) => res.status(500).json({ success: false, message: 'Controller not loaded' }),
+    login: (req, res) => res.status(500).json({ success: false, message: 'Controller not loaded' }),
+    getMe: (req, res) => res.status(500).json({ success: false, message: 'Controller not loaded' }),
+    verifyOTP: (req, res) => res.status(500).json({ success: false, message: 'Controller not loaded' }),
+    resendOTP: (req, res) => res.status(500).json({ success: false, message: 'Controller not loaded' })
+  };
+}
 
 // Validation rules
 const registerValidation = [
@@ -45,10 +61,15 @@ const loginValidation = [
 // Public routes
 router.post('/register', validate(registerValidation), authController.register);
 router.post('/login', validate(loginValidation), authController.login);
-router.post('/verify-otp', authController.verifyOTP);   // ✅ FIXED
-router.post('/resend-otp', authController.resendOTP);   // ✅ FIXED
+router.post('/verify-otp', authController.verifyOTP);
+router.post('/resend-otp', authController.resendOTP);
 
 // Protected routes
 router.get('/me', authenticate, authController.getMe);
+
+// Test route
+router.get('/test', (req, res) => {
+  res.json({ success: true, message: 'Auth routes are working!' });
+});
 
 module.exports = router;

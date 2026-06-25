@@ -1,104 +1,87 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
-// Authentication middleware
-exports.authenticate = async (req, res, next) => {
+const userSchema = new mongoose.Schema({
+  phoneNumber: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true
+  },
+  pin: {
+    type: String,
+    required: true,
+    select: false
+  },
+  fullName: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
+  loginAttempts: {
+    type: Number,
+    default: 0
+  },
+  lockUntil: {
+    type: Date,
+    default: null
+  },
+  lastLogin: {
+    type: Date,
+    default: null
+  },
+  balance: {
+    type: Number,
+    default: 0
+  }
+}, {
+  timestamps: true
+});
+
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('pin')) return next();
   try {
-    let token;
-
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-      token = req.headers.authorization.split(' ')[1];
-    }
-
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: 'Not authorized, no token provided'
-      });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.userId;
-
-    const user = await User.findById(req.userId);
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'User no longer exists'
-      });
-    }
-
-    if (!user.isActive) {
-      return res.status(401).json({
-        success: false,
-        message: 'Account is deactivated'
-      });
-    }
-
-    req.user = user;
+    const salt = await bcrypt.genSalt(10);
+    this.pin = await bcrypt.hash(this.pin, salt);
     next();
   } catch (error) {
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid token'
-      });
-    }
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({
-        success: false,
-        message: 'Token expired'
-      });
-    }
-    
-    return res.status(401).json({
-      success: false,
-      message: 'Not authorized',
-      error: error.message
-    });
+    next(error);
   }
+});
+
+userSchema.methods.comparePIN = async function(candidatePIN) {
+  return await bcrypt.compare(candidatePIN, this.pin);
 };
 
-// Check if user is verified
-exports.isVerified = async (req, res, next) => {
-  try {
-    const user = await User.findById(req.userId);
-    
-    if (!user || !user.isVerified) {
-      return res.status(403).json({
-        success: false,
-        message: 'User not verified. Please complete verification.'
-      });
-    }
-    
-    next();
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Authorization check failed',
-      error: error.message
-    });
-  }
+userSchema.methods.getPublicProfile = function() {
+  return {
+    id: this._id,
+    phoneNumber: this.phoneNumber,
+    fullName: this.fullName,
+    email: this.email,
+    isVerified: this.isVerified,
+    isActive: this.isActive,
+    balance: this.balance,
+    createdAt: this.createdAt
+  };
 };
 
-// Check if user is admin
-exports.isAdmin = async (req, res, next) => {
-  try {
-    const user = await User.findById(req.userId);
-    
-    if (!user || !user.isAdmin) {
-      return res.status(403).json({
-        success: false,
-        message: 'Admin access required'
-      });
-    }
-    
-    next();
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Authorization check failed',
-      error: error.message
-    });
-  }
-}; 
+module.exports = mongoose.model('User', userSchema);

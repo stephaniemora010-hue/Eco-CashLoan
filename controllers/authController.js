@@ -7,8 +7,7 @@ const generateToken = (userId) => {
   });
 };
 
-// @desc    Register new user
-// @route   POST /api/auth/register
+// Register
 exports.register = async (req, res) => {
   try {
     const { phoneNumber, pin, fullName, email } = req.body;
@@ -20,7 +19,7 @@ exports.register = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: 'User already exists with this phone or email'
+        message: 'User already exists'
       });
     }
 
@@ -40,17 +39,14 @@ exports.register = async (req, res) => {
       user: user.getPublicProfile()
     });
   } catch (error) {
-    console.error('Registration error:', error);
     res.status(500).json({
       success: false,
-      message: 'Registration failed',
-      error: error.message
+      message: error.message
     });
   }
 };
 
-// @desc    Login user
-// @route   POST /api/auth/login
+// Login
 exports.login = async (req, res) => {
   try {
     const { phoneNumber, pin } = req.body;
@@ -84,17 +80,14 @@ exports.login = async (req, res) => {
       user: user.getPublicProfile()
     });
   } catch (error) {
-    console.error('Login error:', error);
     res.status(500).json({
       success: false,
-      message: 'Login failed',
-      error: error.message
+      message: error.message
     });
   }
 };
 
-// @desc    Get current user profile
-// @route   GET /api/auth/me
+// Get Me
 exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
@@ -109,22 +102,19 @@ exports.getMe = async (req, res) => {
       user: user.getPublicProfile()
     });
   } catch (error) {
-    console.error('Get user error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to get user',
-      error: error.message
+      message: error.message
     });
   }
 };
 
-// @desc    Verify OTP
-// @route   POST /api/auth/verify-otp
-exports.verifyOtp = async (req, res) => {
+// Verify OTP - Simple version
+exports.verifyOTP = async (req, res) => {
   try {
     const { phoneNumber, otp } = req.body;
     
-    // For demo: accept any 6-digit OTP
+    // Accept any 6-digit OTP for demo
     if (otp && otp.length === 6) {
       const user = await User.findOne({ phoneNumber });
       if (user) {
@@ -146,30 +136,24 @@ exports.verifyOtp = async (req, res) => {
       message: 'Invalid OTP'
     });
   } catch (error) {
-    console.error('OTP verification error:', error);
     res.status(500).json({
       success: false,
-      message: 'Verification failed',
-      error: error.message
+      message: error.message
     });
   }
 };
 
-// @desc    Resend OTP
-// @route   POST /api/auth/resend-otp
-exports.resendOtp = async (req, res) => {
+// Resend OTP - Simple version
+exports.resendOTP = async (req, res) => {
   try {
-    const { phoneNumber } = req.body;
     res.status(200).json({
       success: true,
       message: 'OTP sent successfully'
     });
   } catch (error) {
-    console.error('Resend OTP error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to resend OTP',
-      error: error.message
+      message: error.message
     });
   }
 };
