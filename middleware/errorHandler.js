@@ -4,9 +4,7 @@ exports.errorHandler = (err, req, res, next) => {
     message: err.message,
     stack: err.stack,
     path: req.path,
-    method: req.method,
-    ip: req.ip,
-    userId: req.userId
+    method: req.method
   });
 
   // Mongoose validation error
@@ -45,4 +43,4 @@ exports.errorHandler = (err, req, res, next) => {
     message: message,
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
-}; 
+};

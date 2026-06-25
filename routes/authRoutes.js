@@ -4,7 +4,7 @@ const { body } = require('express-validator');
 const { authenticate } = require('../middleware/auth');
 const { validate } = require('../middleware/validation');
 
-// Import controller - with error handling
+// Import controller - with safe fallback
 let authController;
 try {
   authController = require('../controllers/authController');
@@ -13,11 +13,11 @@ try {
   console.error('❌ Failed to load auth controller:', error.message);
   // Create fallback functions
   authController = {
-    register: (req, res) => res.status(500).json({ success: false, message: 'Controller not loaded' }),
-    login: (req, res) => res.status(500).json({ success: false, message: 'Controller not loaded' }),
-    getMe: (req, res) => res.status(500).json({ success: false, message: 'Controller not loaded' }),
-    verifyOTP: (req, res) => res.status(500).json({ success: false, message: 'Controller not loaded' }),
-    resendOTP: (req, res) => res.status(500).json({ success: false, message: 'Controller not loaded' })
+    register: (req, res) => res.status(500).json({ success: false, message: 'Auth controller not loaded' }),
+    login: (req, res) => res.status(500).json({ success: false, message: 'Auth controller not loaded' }),
+    getMe: (req, res) => res.status(500).json({ success: false, message: 'Auth controller not loaded' }),
+    verifyOTP: (req, res) => res.status(500).json({ success: false, message: 'Auth controller not loaded' }),
+    resendOTP: (req, res) => res.status(500).json({ success: false, message: 'Auth controller not loaded' })
   };
 }
 
@@ -66,10 +66,5 @@ router.post('/resend-otp', authController.resendOTP);
 
 // Protected routes
 router.get('/me', authenticate, authController.getMe);
-
-// Test route
-router.get('/test', (req, res) => {
-  res.json({ success: true, message: 'Auth routes are working!' });
-});
 
 module.exports = router;

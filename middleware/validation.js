@@ -23,4 +23,4 @@ exports.validate = (validations) => {
       errors: formattedErrors
     });
   };
-}; 
+};

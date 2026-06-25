@@ -1,17 +1,20 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
+// Generate JWT Token
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE || '7d'
   });
 };
 
-// Register
+// @desc    Register new user
+// @route   POST /api/auth/register
 exports.register = async (req, res) => {
   try {
     const { phoneNumber, pin, fullName, email } = req.body;
 
+    // Check if user exists
     const existingUser = await User.findOne({ 
       $or: [{ phoneNumber }, { email }] 
     });
@@ -19,10 +22,11 @@ exports.register = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: 'User already exists'
+        message: 'User already exists with this phone or email'
       });
     }
 
+    // Create user
     const user = await User.create({
       phoneNumber,
       pin,
@@ -30,6 +34,7 @@ exports.register = async (req, res) => {
       email
     });
 
+    // Generate token
     const token = generateToken(user._id);
 
     res.status(201).json({
@@ -39,18 +44,22 @@ exports.register = async (req, res) => {
       user: user.getPublicProfile()
     });
   } catch (error) {
+    console.error('Registration error:', error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: 'Registration failed',
+      error: error.message
     });
   }
 };
 
-// Login
+// @desc    Login user
+// @route   POST /api/auth/login
 exports.login = async (req, res) => {
   try {
     const { phoneNumber, pin } = req.body;
 
+    // Find user with PIN field
     const user = await User.findOne({ phoneNumber }).select('+pin');
 
     if (!user) {
@@ -60,6 +69,7 @@ exports.login = async (req, res) => {
       });
     }
 
+    // Verify PIN
     const isMatch = await user.comparePIN(pin);
     if (!isMatch) {
       return res.status(401).json({
@@ -68,9 +78,11 @@ exports.login = async (req, res) => {
       });
     }
 
+    // Update last login
     user.lastLogin = new Date();
     await user.save();
 
+    // Generate token
     const token = generateToken(user._id);
 
     res.status(200).json({
@@ -80,14 +92,17 @@ exports.login = async (req, res) => {
       user: user.getPublicProfile()
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: 'Login failed',
+      error: error.message
     });
   }
 };
 
-// Get Me
+// @desc    Get current user
+// @route   GET /api/auth/me
 exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
@@ -102,58 +117,83 @@ exports.getMe = async (req, res) => {
       user: user.getPublicProfile()
     });
   } catch (error) {
+    console.error('Get user error:', error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: 'Failed to get user',
+      error: error.message
     });
   }
 };
 
-// Verify OTP - Simple version
+// @desc    Verify OTP
+// @route   POST /api/auth/verify-otp
 exports.verifyOTP = async (req, res) => {
   try {
     const { phoneNumber, otp } = req.body;
     
-    // Accept any 6-digit OTP for demo
-    if (otp && otp.length === 6) {
-      const user = await User.findOne({ phoneNumber });
-      if (user) {
-        user.isVerified = true;
-        await user.save();
-        
-        const token = generateToken(user._id);
-        return res.status(200).json({
-          success: true,
-          message: 'OTP verified successfully',
-          token,
-          user: user.getPublicProfile()
-        });
-      }
+    // For demo: accept any 6-digit OTP
+    if (!otp || otp.length !== 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please enter a valid 6-digit OTP'
+      });
     }
+
+    const user = await User.findOne({ phoneNumber });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Mark as verified
+    user.isVerified = true;
+    await user.save();
     
-    res.status(400).json({
-      success: false,
-      message: 'Invalid OTP'
+    const token = generateToken(user._id);
+    
+    res.status(200).json({
+      success: true,
+      message: 'OTP verified successfully',
+      token,
+      user: user.getPublicProfile()
     });
   } catch (error) {
+    console.error('OTP verification error:', error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: 'Verification failed',
+      error: error.message
     });
   }
 };
 
-// Resend OTP - Simple version
+// @desc    Resend OTP
+// @route   POST /api/auth/resend-otp
 exports.resendOTP = async (req, res) => {
   try {
+    const { phoneNumber } = req.body;
+    
+    if (!phoneNumber) {
+      return res.status(400).json({
+        success: false,
+        message: 'Phone number is required'
+      });
+    }
+
+    // In production, generate and send actual OTP here
     res.status(200).json({
       success: true,
       message: 'OTP sent successfully'
     });
   } catch (error) {
+    console.error('Resend OTP error:', error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: 'Failed to resend OTP',
+      error: error.message
     });
   }
 };

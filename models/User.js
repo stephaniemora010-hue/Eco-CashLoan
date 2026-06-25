@@ -4,25 +4,32 @@ const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   phoneNumber: {
     type: String,
-    required: true,
+    required: [true, 'Phone number is required'],
     unique: true,
-    trim: true
+    trim: true,
+    match: [/^\d{9}$/, 'Please enter a valid 9-digit phone number']
   },
   pin: {
     type: String,
-    required: true,
+    required: [true, 'PIN is required'],
+    minlength: 4,
+    maxlength: 4,
     select: false
   },
   fullName: {
     type: String,
-    required: true,
-    trim: true
+    required: [true, 'Full name is required'],
+    trim: true,
+    minlength: 2,
+    maxlength: 100
   },
   email: {
     type: String,
-    required: true,
+    required: [true, 'Email is required'],
     unique: true,
-    lowercase: true
+    trim: true,
+    lowercase: true,
+    match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email']
   },
   isVerified: {
     type: Boolean,
@@ -56,6 +63,7 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Hash PIN before saving
 userSchema.pre('save', async function(next) {
   if (!this.isModified('pin')) return next();
   try {
@@ -67,10 +75,18 @@ userSchema.pre('save', async function(next) {
   }
 });
 
+// Compare PIN method
 userSchema.methods.comparePIN = async function(candidatePIN) {
   return await bcrypt.compare(candidatePIN, this.pin);
 };
 
+// Check if account is locked
+userSchema.methods.isLocked = function() {
+  if (!this.lockUntil) return false;
+  return this.lockUntil > Date.now();
+};
+
+// Get public profile
 userSchema.methods.getPublicProfile = function() {
   return {
     id: this._id,
