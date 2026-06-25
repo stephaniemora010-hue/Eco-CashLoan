@@ -45,8 +45,8 @@ const loginValidation = [
 // Public routes
 router.post('/register', validate(registerValidation), authController.register);
 router.post('/login', validate(loginValidation), authController.login);
-router.post('/verify-otp', authController.verifyOtp);
-router.post('/resend-otp', authController.resendOtp);
+router.post('/verify-otp', authController.verifyOTP);   // ✅ FIXED
+router.post('/resend-otp', authController.resendOTP);   // ✅ FIXED
 
 // Protected routes
 router.get('/me', authenticate, authController.getMe);
